@@ -1898,6 +1898,7 @@ get_wm() {
     ((wm_run == 1)) && return
 
     case $kernel_name in
+        *FreeBSD*) ps_flags=(x -c) ;;
         *OpenBSD*) ps_flags=(x -c) ;;
         *)         ps_flags=(-e) ;;
     esac
