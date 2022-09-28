@@ -1827,6 +1827,9 @@ get_de() {
 
             elif [[ $TDE_FULL_SESSION ]]; then
                 de=Trinity
+
+            elif [[ $DTUSERSESSION ]]; then
+                de=CDE
             fi
 
             # When a window manager is started from a display manager
@@ -1867,6 +1870,7 @@ get_de() {
             Lumina*)   de_ver=$(lumina-desktop --version 2>&1) ;;
             Trinity*)  de_ver=$(tde-config --version) ;;
             Unity*)    de_ver=$(unity --version) ;;
+            CDE*)      de_ver=$(ttsession -version | awk '/ttsession/ {print $5}') ;;
         esac
 
         de_ver=${de_ver/*TDE:}
@@ -1946,6 +1950,7 @@ get_wm() {
                            -e "[f]vwm" \
                            -e "[d]wm" \
                            -e "[2]bwm" \
+                           -e "[d]twm" \
                            -e "[m]onsterwm" \
                            -e "[t]inywm" \
                            -e "[x]11fs" \
@@ -2180,6 +2185,11 @@ get_wm_theme() {
             wm_theme=${wm_theme/session\.styleFile: }
             wm_theme=${wm_theme##*\\}
             wm_theme=${wm_theme%.*}
+        ;;
+
+        dtwm)
+            wm_theme=$(xrdb -query -get "*${DISPLAY:1}*ColorPalette")
+            wm_theme=${wm_theme%\.dp}
         ;;
     esac
 
@@ -3594,7 +3604,7 @@ END
                          "$termite_config")"
         ;;
 
-        urxvt|urxvtd|rxvt-unicode|xterm)
+        urxvt|urxvtd|rxvt-unicode|dtterm|xterm)
             xrdb=$(xrdb -query)
             term_font=$(grep -im 1 -e "^${term/d}"'\**\.*font:' -e '^\*font:' <<< "$xrdb")
             term_font=${term_font/*"*font:"}
